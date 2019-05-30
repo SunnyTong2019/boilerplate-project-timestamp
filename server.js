@@ -25,6 +25,32 @@ app.get("/api/hello", function (req, res) {
 });
 
 
+//Code I added
+app.get("/api/timestamp", 
+function (req, res, next) {
+ req.time=new Date();
+ next();
+},    
+function (req, res) {
+ res.json({unix: req.time.getTime(), utc: req.time.toUTCString()});
+});
+
+app.get("/api/timestamp/:date_string", 
+function (req, res, next) {
+ var regEx=/-/;
+ if (regEx.test(req.params.date_string))
+  { req.time=new Date(req.params.date_string); }
+ else
+  { req.time=new Date(req.params.date_string*1000); }
+ next();
+},    
+function (req, res) {
+  if (req.time=='Invalid Date')
+   { res.json({error: "Invalid Date"}); }
+  else
+   { res.json({unix: req.time.getTime(), utc: req.time.toUTCString()}); }
+});
+
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
